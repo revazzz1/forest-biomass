@@ -3,12 +3,9 @@ from __future__ import annotations
 
 import json
 
-import matplotlib
+import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
-
-matplotlib.use("Agg")
-import matplotlib.pyplot as plt
 
 from biomass import FIGURES, MODELS
 from biomass.carbon import tco2_per_patch
@@ -18,6 +15,7 @@ from biomass.split import load_split
 MODEL_NAMES = {"ridge": "Ridge", "rf": "Random forest", "cnn": "CNN"}
 BINS = [0, 50, 100, 150, np.inf]
 BIN_LABELS = ["0–50", "50–100", "100–150", "150+"]
+COLORS = {"ridge": "#7fa86f", "rf": "#2f5d3a", "cnn": "#1f3d34"}  # same series colours as the UI
 
 
 def metrics(y: np.ndarray, yhat: np.ndarray) -> dict[str, float]:
@@ -45,7 +43,7 @@ def scatter(y: np.ndarray, preds: dict[str, np.ndarray], path) -> None:
     lim = max(float(y.max()), *(float(p.max()) for p in preds.values())) * 1.05
     for ax, (name, p) in zip(np.atleast_1d(axes), preds.items()):
         ax.plot([0, lim], [0, lim], color="#999", lw=1)
-        ax.scatter(y, p, s=8, alpha=0.6, color="#2f5d3a")
+        ax.scatter(y, p, s=8, alpha=0.6, color=COLORS[name])
         ax.set(title=MODEL_NAMES[name], xlabel="LiDAR biomass (t/ha)", xlim=(0, lim), ylim=(0, lim), aspect="equal")
     np.atleast_1d(axes)[0].set_ylabel("Predicted biomass (t/ha)")
     fig.tight_layout()
@@ -58,7 +56,7 @@ def residual_plot(y: np.ndarray, preds: dict[str, np.ndarray], path) -> None:
     width = 0.8 / len(preds)
     for i, (name, p) in enumerate(preds.items()):
         r = residuals_by_bin(y, p)
-        ax.bar(np.arange(len(r)) + i * width, r.mean_residual, width, label=MODEL_NAMES[name])
+        ax.bar(np.arange(len(r)) + i * width, r.mean_residual, width, label=MODEL_NAMES[name], color=COLORS[name])
     ax.axhline(0, color="#333", lw=1)
     ax.set(xticks=np.arange(len(BIN_LABELS)) + width, xticklabels=BIN_LABELS, xlabel="LiDAR biomass (t/ha)",
            ylabel="Mean residual, predicted − true (t/ha)")

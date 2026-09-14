@@ -16,10 +16,10 @@ train:
 	$(PY) -m biomass.models
 
 evaluate:
-	$(PY) -m biomass.evaluate
+	MPLBACKEND=Agg $(PY) -m biomass.evaluate
 
 export:
-	$(PY) -m biomass.export
+	MPLBACKEND=Agg $(PY) -m biomass.export
 
 test:
 	$(PY) -m pytest -q tests
