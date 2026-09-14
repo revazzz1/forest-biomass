@@ -86,8 +86,8 @@ function Co2Row({ label, value, rmse, truth }: { label: string; value: number; r
       <td>{label}</td>
       <td className="num">{fmt(value)} ± {fmt(rmse)}</td>
       <td>
-        <span className="band" style={{ width: '100%', background: 'transparent' }} aria-hidden="true">
-          <span className="band" style={{ position: 'absolute', left: pct(Math.max(0, value - rmse)), width: pct(Math.min(value + rmse, max) - Math.max(0, value - rmse)) }} />
+        <span className="track" aria-hidden="true">
+          <span className="band" style={{ left: pct(Math.max(0, value - rmse)), width: pct(Math.min(value + rmse, max) - Math.max(0, value - rmse)) }} />
           <i style={{ left: pct(truth), background: '#c9a66b' }} />
           <i style={{ left: pct(value) }} />
         </span>
@@ -99,19 +99,21 @@ function Co2Row({ label, value, rmse, truth }: { label: string; value: number; r
 function PredictionScale({ summary, patch, keys }: { summary: Summary; patch: Patch; keys: ModelKey[] }) {
   const max = Math.ceil(Math.max(summary.dataset.agb_max, patch.agb_true, ...keys.map((k) => patch.pred[k])) / 50) * 50
   const x = (v: number) => 20 + (v / max) * 760
+  const colour: Record<ModelKey, string> = { ridge: '#7fa86f', rf: '#2f5d3a', cnn: '#1f3d34' }
+  const byValue = [...keys].sort((a, b) => patch.pred[a] - patch.pred[b])  // one label row per model, in value order, so labels never overlap
   return (
-    <svg className="scale" viewBox="0 0 800 88" role="img" aria-label={`Predictions against the LiDAR value of ${fmt(patch.agb_true)} t/ha`}>
-      <line className="axis" x1={20} x2={780} y1={50} y2={50} stroke="#d5dbd8" strokeWidth={2} />
+    <svg className="scale" viewBox="0 0 800 130" role="img" aria-label={`Predictions against the LiDAR value of ${fmt(patch.agb_true)} t/ha`}>
+      <line x1={20} x2={780} y1={50} y2={50} stroke="#d5dbd8" strokeWidth={2} />
       {Array.from({ length: max / 50 + 1 }, (_, i) => i * 50).map((v) => (
-        <g key={v}><line x1={x(v)} x2={x(v)} y1={46} y2={54} stroke="#d5dbd8" /><text className="tick" x={x(v)} y={72} textAnchor="middle">{v}</text></g>
+        <g key={v}><line x1={x(v)} x2={x(v)} y1={46} y2={54} stroke="#d5dbd8" /><text className="tick" x={x(v)} y={70} textAnchor="middle">{v}</text></g>
       ))}
-      <text className="tick" x={780} y={86} textAnchor="end">t/ha</text>
+      <text className="tick" x={780} y={128} textAnchor="end">t/ha</text>
       <line x1={x(patch.agb_true)} x2={x(patch.agb_true)} y1={34} y2={66} stroke="#c9a66b" strokeWidth={3} />
       <text x={x(patch.agb_true)} y={26} textAnchor="middle">LiDAR {fmt(patch.agb_true)}</text>
-      {keys.map((k, i) => (
+      {byValue.map((k, i) => (
         <g key={k}>
-          <circle cx={x(patch.pred[k])} cy={50} r={6} fill={['#7fa86f', '#2f5d3a', '#1f3d34'][i]} />
-          <text x={x(patch.pred[k])} y={i % 2 ? 12 : 86} textAnchor="middle" fontSize={12}>{summary.models[k].label} {fmt(patch.pred[k])}</text>
+          <circle cx={x(patch.pred[k])} cy={50} r={6} fill={colour[k]} />
+          <text x={x(patch.pred[k])} y={90 + 18 * i} textAnchor="middle" fontSize={12}>{summary.models[k].label} {fmt(patch.pred[k])}</text>
         </g>
       ))}
     </svg>

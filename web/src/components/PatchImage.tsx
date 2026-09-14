@@ -7,6 +7,6 @@ export const altText = (p: Patch, kind: 'rgb' | 'ndvi' | 'agb') =>
     agb: `Airborne LiDAR biomass map of patch ${p.id}, mean ${fmt(p.agb_true)} t/ha`,
   })[kind]
 
-export function PatchImage({ patch, kind, className }: { patch: Patch; kind: 'rgb' | 'ndvi' | 'agb'; className?: string }) {
-  return <img src={imageUrl(patch.id, kind)} alt={altText(patch, kind)} width={256} height={256} className={className} />
+export function PatchImage({ patch, kind, className, onLoad }: { patch: Patch; kind: 'rgb' | 'ndvi' | 'agb'; className?: string; onLoad?: () => void }) {
+  return <img src={imageUrl(patch.id, kind)} alt={altText(patch, kind)} width={256} height={256} className={className} onLoad={onLoad} />
 }

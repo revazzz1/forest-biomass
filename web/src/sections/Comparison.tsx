@@ -7,7 +7,8 @@ const SERIES: Record<ModelKey, string> = { ridge: '#7fa86f', rf: '#2f5d3a', cnn:
 export function Comparison({ summary, patches }: { summary: Summary; patches: Patch[] }) {
   const keys = modelKeys(summary)
   const [model, setModel] = useState<ModelKey>(keys[keys.length - 1])
-  const max = Math.ceil(Math.max(...patches.flatMap((p) => [p.agb_true, ...keys.map((k) => p.pred[k])])) / 25) * 25
+  const max = Math.ceil(Math.max(...patches.flatMap((p) => [p.agb_true, ...keys.map((k) => p.pred[k])])) / 50) * 50
+  const ticks = Array.from({ length: max / 50 + 1 }, (_, i) => i * 50)
   const points = patches.map((p) => ({ id: p.id, x: p.agb_true, y: p.pred[model] }))
   const bins = Object.keys(summary.models[model].residuals_by_bin).map((bin) => ({
     bin,
@@ -25,10 +26,10 @@ export function Comparison({ summary, patches }: { summary: Summary; patches: Pa
         <div>
           <div className="chart">
             <ResponsiveContainer>
-              <ScatterChart margin={{ top: 8, right: 16, bottom: 24, left: 8 }}>
+              <ScatterChart margin={{ top: 8, right: 16, bottom: 24, left: 16 }}>
                 <CartesianGrid stroke="#d5dbd8" />
-                <XAxis type="number" dataKey="x" domain={[0, max]} name="LiDAR biomass" unit=" t/ha" label={{ value: 'LiDAR biomass (t/ha)', position: 'bottom', offset: 8 }} />
-                <YAxis type="number" dataKey="y" domain={[0, max]} name="Predicted" unit=" t/ha" label={{ value: 'Predicted (t/ha)', angle: -90, position: 'insideLeft' }} />
+                <XAxis type="number" dataKey="x" domain={[0, max]} ticks={ticks} name="LiDAR biomass" label={{ value: 'LiDAR biomass (t/ha)', position: 'bottom', offset: 8 }} />
+                <YAxis type="number" dataKey="y" domain={[0, max]} ticks={ticks} name="Predicted" width={60} label={{ value: 'Predicted (t/ha)', angle: -90, position: 'insideLeft', offset: 8 }} />
                 <ReferenceLine segment={[{ x: 0, y: 0 }, { x: max, y: max }]} stroke="#4b5350" strokeDasharray="4 4" />
                 <Tooltip formatter={(v) => `${fmt(Number(v), 1)} t/ha`} labelFormatter={() => ''} />
                 <Scatter data={points} fill={SERIES[model]} fillOpacity={0.75} isAnimationActive={false} />
@@ -60,7 +61,7 @@ export function Comparison({ summary, patches }: { summary: Summary; patches: Pa
           <BarChart data={bins} margin={{ top: 8, right: 16, bottom: 24, left: 8 }}>
             <CartesianGrid stroke="#d5dbd8" vertical={false} />
             <XAxis dataKey="bin" label={{ value: 'LiDAR biomass (t/ha)', position: 'bottom', offset: 8 }} />
-            <YAxis label={{ value: 'Mean residual (t/ha)', angle: -90, position: 'insideLeft' }} />
+            <YAxis width={60} tickFormatter={(v) => fmt(Number(v))} label={{ value: 'Mean residual (t/ha)', angle: -90, position: 'insideLeft', offset: 8 }} />
             <ReferenceLine y={0} stroke="#4b5350" />
             <Tooltip formatter={(v, name) => [`${fmt(Number(v), 1)} t/ha`, summary.models[name as ModelKey].label]} />
             {keys.map((k) => <Bar key={k} dataKey={k} fill={SERIES[k]} fillOpacity={k === model ? 1 : 0.45} isAnimationActive={false} />)}
