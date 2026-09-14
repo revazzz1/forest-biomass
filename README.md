@@ -3,7 +3,9 @@
 Course project, Aalto introductory machine learning, autumn 2026. Estimates mean
 above-ground biomass (t/ha) of 2.56 × 2.56 km patches of Finnish forest from one summer
 Sentinel-2 image, compares a small CNN against ridge regression and a random forest, and
-states the error in tonnes of CO₂ per patch. A local web UI browses the patches.
+states the error in tonnes of CO₂ per patch. A web UI browses the patches.
+
+**Live demo:** https://revazzz1.github.io/forest-biomass/
 
 Data: [BioMassters](https://huggingface.co/datasets/nascetti-a/BioMassters) (Nascetti et
 al., NeurIPS 2023 Datasets & Benchmarks), CC-BY-4.0. Labels are airborne-LiDAR biomass
