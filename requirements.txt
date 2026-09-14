@@ -1,0 +1,12 @@
+numpy
+pandas
+pyarrow
+scikit-learn
+tensorflow>=2.16
+tifffile
+matplotlib
+pillow
+joblib
+pytest
+jupyter
+nbconvert
