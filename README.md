@@ -18,6 +18,7 @@ make features          # tabular features + chip-level 70/15/15 split
 make train             # ridge, random forest, CNN -> models/
 make evaluate          # test-set metrics -> models/*_metrics.json, figures/
 make export            # -> web/public/data/ for the UI
+make publish           # static build -> GitHub Pages (gh-pages branch)
 make test
 cd web && npm install && npm run dev
 ```
