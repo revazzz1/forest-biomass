@@ -20,7 +20,7 @@ from biomass.load import load_patches
 from biomass.split import load_split
 
 RIDGE_ALPHAS = (0.01, 0.1, 1, 10, 100, 1000)
-MAX_EPOCHS = 30
+MAX_EPOCHS = 100
 
 
 def fit_ridge(Xtr: pd.DataFrame, ytr: np.ndarray, Xva: pd.DataFrame, yva: np.ndarray) -> tuple[object, dict]:
@@ -59,7 +59,7 @@ def fit_cnn(Xtr: np.ndarray, ytr: np.ndarray, Xva: np.ndarray, yva: np.ndarray, 
     keras.utils.set_random_seed(seed)
     mu, sd = float(ytr.mean()), float(ytr.std())
     model = build_cnn(Xtr)
-    stop = keras.callbacks.EarlyStopping(monitor="val_mae", patience=6, restore_best_weights=True)
+    stop = keras.callbacks.EarlyStopping(monitor="val_mae", patience=10, restore_best_weights=True)
     hist = model.fit(Xtr, (ytr - mu) / sd, validation_data=(Xva, (yva - mu) / sd), epochs=MAX_EPOCHS,
                      batch_size=32, callbacks=[stop], verbose=2)
     epochs = len(hist.history["loss"])
